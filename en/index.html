@@ -2657,6 +2657,11 @@ body.wallet-open { overflow: hidden; }
 .code-row .code-region + .code-region{margin-left:2px;padding-left:8px;border-left:1px solid rgba(255,255,255,.16)}
 .code-row .code-region-tag{font-size:10px;letter-spacing:.04em;padding:1px 5px;border-radius:5px;
   background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.28);color:#fff;white-space:nowrap}
+.code-row .code-info{cursor:pointer;margin-left:5px;font-size:11px;opacity:.8;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.code-row .code-info:hover{opacity:1}
+.code-row .code-path{flex-basis:100%;margin-top:2px;font-size:11px;color:#fff;font-weight:600;
+  text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.8)}
 </style>
 </head>
 <body>
@@ -6511,23 +6516,29 @@ const VERSION_CODES = {
   e1: { label:'前瞻码',
         cn:['星神阿哈祝福你','永远不会欺骗你','永远不会抛弃你'],
         gl:['NEVERGONNAGIVE'],
-        until:'10.31 23:59', dead:true, next:'下期 ≈ 12.19（4.8 前瞻）' },
+        until:'10.31 23:59', dead:true, next:'下期 ≈ 12.19（4.8 前瞻）',
+        path:'游戏内「手机」→ 兑换码；国际服 hsr.hoyoverse.com/gift；需开拓等级 5' },
   e6: { label:'前瞻码',
         cn:['坏灭肇始之时','天才少年米提亚登场','千星奇域一起拍拍拍'],
         gl:['HourofRuin','ExpertMitya','PhotoTime'],
-        until:'10.26 12:00', dead:true, next:'下期 ≈ 11.21（7.3 前瞻）' },
+        until:'10.26 12:00', dead:true, next:'下期 ≈ 11.21（7.3 前瞻）',
+        path:'游戏内「设置」→ 账户 → 兑换码；国际服 genshin.hoyoverse.com/gift；需冒险等阶 10' },
   e2: { label:'前瞻码', cn:['PHOENIX1021'], gl:['JRNY2SKY'],
         until:'10.11 23:59', dead:true, next:'下期 ≈ 11.21（3.4 前瞻）',
+        path:'游戏内「菜单」→ 更多 → 兑换码；国际服 zenless.hoyoverse.com/redemption；需绳网等级达标',
         extra:['LEVELUP33','INKSHIFT33','HOLLOWRUN33','Sunbringer'], extraNote:'常驻活动码（国际服）' },
   e3: { label:'前瞻码', cn:[], gl:['TRAINOFSOULS','BLOOMINGFLOWERS','SCHOOLLIFE'],
         until:'11.08 23:59', dead:true, next:'下期 ≈ 12.24（3.9 前瞻）',
+        path:'游戏内「设置」→ 其他 → 兑换码；需联觉等级 2',
         sameNote:'国服/国际服同码' },
   e5: { label:'前瞻码', cn:[], gl:[],
-        next:'1.5 起改为游戏内邮件领取（1000 嵌晶玉）· 无通用码' },
+        next:'1.5 起改为游戏内邮件领取（1000 嵌晶玉）· 无通用码',
+        path:'游戏内邮箱 → 点邮件内链接进新版本专题页领取' },
   e11: { label:'前瞻码',
         gl:['INVALIDNUMBER','HIOLDFRIEND','EXENORESPONSE'],
         sameNote:'国服/国际服同码（合计 300 环石）',
-        until:'11.01 23:59', dead:true, next:'下期 ≈ 待官方公布（1.6 前瞻）' },
+        until:'11.01 23:59', dead:true, next:'下期 ≈ 待官方公布（1.6 前瞻）',
+        path:'游戏内手机界面 → ⋯ → 兑换码' },
 };
 
 function codeChip(code) {
@@ -6575,6 +6586,24 @@ function mountCodeRows() {
     const lab = document.createElement('span');
     lab.className = 'code-label';
     lab.textContent = '🎟 ' + d.label;
+    if (d.path) {
+      row.title = '兑换路径：' + d.path;
+      lab.title = row.title;
+      const info = document.createElement('span');
+      info.className = 'code-info';
+      info.textContent = 'ⓘ';
+      info.title = row.title;
+      info.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        let p = row.querySelector('.code-path');
+        if (p) { p.remove(); return; }
+        p = document.createElement('span');
+        p.className = 'code-path';
+        p.textContent = '兑换路径：' + d.path;
+        row.appendChild(p);
+      });
+      lab.appendChild(info);
+    }
     row.appendChild(lab);
 
     const hasAny = (d.cn && d.cn.length) || (d.gl && d.gl.length);
