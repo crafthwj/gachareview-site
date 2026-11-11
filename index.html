@@ -2629,24 +2629,23 @@ body.wallet-open { overflow: hidden; }
 }
 
 /* ── 前瞻兑换码行 ─────────────────────────────── */
-.code-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 9px;padding:8px 10px;border-radius:10px;
-  background:rgba(5,8,16,.78);border:1px solid rgba(255,255,255,.16);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  font-size:11.5px;line-height:1.5;color:#e8eef5;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-.code-row .code-label{font-weight:700;color:#fff;white-space:nowrap}
-.code-row .code-item{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.16);border-radius:6px;padding:1px 6px;color:#fff;cursor:pointer;white-space:nowrap;
+.code-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 9px;padding:6px 0;border:0;
+  background:transparent;
+  font-size:11.5px;line-height:1.5;color:#f2f6fa;text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 12px rgba(0,0,0,.55)}
+.code-row .code-label{font-weight:800;color:#fff;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.8)}
+.code-row .code-item{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(0,0,0,.50);
+  border:1px solid rgba(255,255,255,.34);border-radius:6px;padding:1px 6px;color:#fff;cursor:pointer;white-space:nowrap;
   transition:background .15s ease,border-color .15s ease}
-.code-row .code-item:hover{background:rgba(255,255,255,.20)}
+.code-row .code-item:hover{background:rgba(0,0,0,.72);border-color:rgba(255,255,255,.6)}
 .code-row .code-item.is-copied{background:#5f8f2e;border-color:#5f8f2e}
-.code-row .code-meta{color:#cfd8e3;white-space:normal;overflow-wrap:anywhere;min-width:0}
-.code-row .code-dead{color:#ffb4b4}
-.code-row .code-next{margin-left:auto;color:#d8e2ee;white-space:nowrap}
+.code-row .code-meta{color:#fff;font-weight:600;white-space:normal;overflow-wrap:anywhere;min-width:0;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.8)}
+.code-row .code-dead{color:#ffc9c9}
+.code-row .code-next{margin-left:auto;color:#fff;font-weight:600;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.8)}
 @media (max-width:720px){ .code-row .code-next{margin-left:0} }
 .code-row .code-region{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
 .code-row .code-region + .code-region{margin-left:2px;padding-left:8px;border-left:1px solid rgba(255,255,255,.16)}
 .code-row .code-region-tag{font-size:10px;letter-spacing:.04em;padding:1px 5px;border-radius:5px;
-  background:rgba(255,255,255,.14);color:#fff;white-space:nowrap}
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.28);color:#fff;white-space:nowrap}
 </style>
 </head>
 <body>
