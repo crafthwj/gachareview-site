@@ -2627,6 +2627,22 @@ body.wallet-open { overflow: hidden; }
   .feature-main { max-width: 58%; }
   .hero-copy { max-width: 980px; }
 }
+
+/* ── 前瞻兑换码行 ─────────────────────────────── */
+.code-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 9px;padding:8px 10px;border-radius:10px;
+  background:rgba(5,8,16,.78);border:1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  font-size:11.5px;line-height:1.5;color:#e8eef5;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.code-row .code-label{font-weight:700;color:#fff;white-space:nowrap}
+.code-row .code-item{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);border-radius:6px;padding:1px 6px;color:#fff;cursor:pointer;white-space:nowrap;
+  transition:background .15s ease,border-color .15s ease}
+.code-row .code-item:hover{background:rgba(255,255,255,.20)}
+.code-row .code-item.is-copied{background:#5f8f2e;border-color:#5f8f2e}
+.code-row .code-meta{color:#cfd8e3;white-space:normal;overflow-wrap:anywhere;min-width:0}
+.code-row .code-dead{color:#ffb4b4}
+.code-row .code-next{margin-left:auto;color:#d8e2ee;white-space:nowrap}
+@media (max-width:720px){ .code-row .code-next{margin-left:0} }
 </style>
 </head>
 <body>
@@ -6475,6 +6491,74 @@ function setupLanguage() {
 /* =========================================================
    启动
    ========================================================= */
+
+/* ── 前瞻兑换码：每个游戏卡一行（码 / 有效期 / 下期推测）─────── */
+const VERSION_CODES = {
+  e1: { label:'前瞻码', codes:['星神阿哈祝福你','永远不会欺骗你','永远不会抛弃你'],
+        until:'10.31 23:59', dead:true, next:'下期 ≈ 12.19（4.8 前瞻）' },
+  e6: { label:'前瞻码', codes:['千星奇域一起拍拍拍','坏灭肇始之时','天才少年米提亚登场'],
+        until:'10.26 12:00', dead:true, next:'下期 ≈ 11.21（7.3 前瞻）' },
+  e2: { label:'前瞻码', codes:['JRNY2SKY'], until:'10.11 23:59', dead:true,
+        next:'下期 ≈ 11.21（3.4 前瞻）', extra:['LEVELUP33','INKSHIFT33','HOLLOWRUN33','Sunbringer'] },
+  e3: { label:'前瞻码', codes:['TRAINOFSOULS','BLOOMINGFLOWERS','SCHOOLLIFE'],
+        until:'11.08 23:59', dead:true, next:'下期 ≈ 12.24（3.9 前瞻）' },
+  e5: { label:'前瞻码', codes:[], next:'暂无公开前瞻码' },
+  e11: { label:'前瞻码', codes:[], next:'暂无公开前瞻码' },
+};
+
+function mountCodeRows() {
+  document.querySelectorAll('[data-card-event]').forEach((card) => {
+    const id = card.getAttribute('data-card-event');
+    const d = VERSION_CODES[id];
+    if (!d) return;
+    const planner = card.querySelector('.dossier-planner');
+    if (!planner || planner.querySelector('.code-row')) return;
+
+    const row = document.createElement('div');
+    row.className = 'code-row';
+
+    const lab = document.createElement('span');
+    lab.className = 'code-label';
+    lab.textContent = '🎟 ' + d.label;
+    row.appendChild(lab);
+
+    const list = (d.codes && d.codes.length) ? d.codes : (d.extra || []);
+    if (list.length) {
+      list.forEach((code) => {
+        const b = document.createElement('span');
+        b.className = 'code-item';
+        b.textContent = code;
+        b.title = '点击复制';
+        b.addEventListener('click', () => {
+          if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
+          b.classList.add('is-copied');
+          setTimeout(() => b.classList.remove('is-copied'), 900);
+        });
+        row.appendChild(b);
+      });
+      if (d.extra && d.codes.length) {
+        const more = document.createElement('span');
+        more.className = 'code-meta';
+        more.textContent = '常驻活动码：' + d.extra.join(' / ');
+        row.appendChild(more);
+      }
+      if (d.until) {
+        const m = document.createElement('span');
+        m.className = 'code-meta' + (d.dead ? ' code-dead' : '');
+        m.textContent = (d.dead ? '有效期至 ' : '有效至 ') + d.until + (d.dead ? ' · 已过期' : '');
+        row.appendChild(m);
+      }
+    }
+    if (d.next) {
+      const n = document.createElement('span');
+      n.className = 'code-next';
+      n.textContent = d.next;
+      row.appendChild(n);
+    }
+    planner.insertBefore(row, planner.firstChild);
+  });
+}
+
 renderChips();
 renderMethod();
 renderTicker();
@@ -6482,6 +6566,8 @@ renderAll();
 bindGlobal();
 openByHash();
 setupLanguage();
+mountCodeRows();
+(function(){const g=document.getElementById('eventGrid')||document.body;if(!window.__codeObs){window.__codeObs=new MutationObserver(()=>mountCodeRows());window.__codeObs.observe(g,{childList:true});}})();
 </script>
 
 
