@@ -2643,6 +2643,10 @@ body.wallet-open { overflow: hidden; }
 .code-row .code-dead{color:#ffb4b4}
 .code-row .code-next{margin-left:auto;color:#d8e2ee;white-space:nowrap}
 @media (max-width:720px){ .code-row .code-next{margin-left:0} }
+.code-row .code-region{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.code-row .code-region + .code-region{margin-left:2px;padding-left:8px;border-left:1px solid rgba(255,255,255,.16)}
+.code-row .code-region-tag{font-size:10px;letter-spacing:.04em;padding:1px 5px;border-radius:5px;
+  background:rgba(255,255,255,.14);color:#fff;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -6492,19 +6496,56 @@ function setupLanguage() {
    启动
    ========================================================= */
 
-/* ── 前瞻兑换码：每个游戏卡一行（码 / 有效期 / 下期推测）─────── */
+/* ── 前瞻兑换码：每个游戏卡一行（国服/国际服 · 有效期 · 下期推测）─── */
 const VERSION_CODES = {
-  e1: { label:'前瞻码', codes:['星神阿哈祝福你','永远不会欺骗你','永远不会抛弃你'],
+  e1: { label:'前瞻码',
+        cn:['星神阿哈祝福你','永远不会欺骗你','永远不会抛弃你'],
+        gl:['NEVERGONNAGIVE'],
         until:'10.31 23:59', dead:true, next:'下期 ≈ 12.19（4.8 前瞻）' },
-  e6: { label:'前瞻码', codes:['千星奇域一起拍拍拍','坏灭肇始之时','天才少年米提亚登场'],
+  e6: { label:'前瞻码',
+        cn:['坏灭肇始之时','天才少年米提亚登场','千星奇域一起拍拍拍'],
+        gl:['HourofRuin','ExpertMitya','PhotoTime'],
         until:'10.26 12:00', dead:true, next:'下期 ≈ 11.21（7.3 前瞻）' },
-  e2: { label:'前瞻码', codes:['JRNY2SKY'], until:'10.11 23:59', dead:true,
-        next:'下期 ≈ 11.21（3.4 前瞻）', extra:['LEVELUP33','INKSHIFT33','HOLLOWRUN33','Sunbringer'] },
-  e3: { label:'前瞻码', codes:['TRAINOFSOULS','BLOOMINGFLOWERS','SCHOOLLIFE'],
-        until:'11.08 23:59', dead:true, next:'下期 ≈ 12.24（3.9 前瞻）' },
-  e5: { label:'前瞻码', codes:[], next:'暂无公开前瞻码' },
-  e11: { label:'前瞻码', codes:[], next:'暂无公开前瞻码' },
+  e2: { label:'前瞻码', cn:[], gl:['JRNY2SKY'],
+        until:'10.11 23:59', dead:true, next:'下期 ≈ 11.21（3.4 前瞻）',
+        extra:['LEVELUP33','INKSHIFT33','HOLLOWRUN33','Sunbringer'], extraNote:'常驻活动码（国际服）' },
+  e3: { label:'前瞻码', cn:[], gl:['TRAINOFSOULS','BLOOMINGFLOWERS','SCHOOLLIFE'],
+        until:'11.08 23:59', dead:true, next:'下期 ≈ 12.24（3.9 前瞻）',
+        sameNote:'国服/国际服同码' },
+  e5: { label:'前瞻码', cn:[], gl:[], next:'暂无公开前瞻码' },
+  e11: { label:'前瞻码', cn:[], gl:[], next:'暂无公开前瞻码' },
 };
+
+function codeChip(code) {
+  const b = document.createElement('span');
+  b.className = 'code-item';
+  b.textContent = code;
+  b.title = '点击复制';
+  b.addEventListener('click', () => {
+    if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
+    b.classList.add('is-copied');
+    setTimeout(() => b.classList.remove('is-copied'), 900);
+  });
+  return b;
+}
+
+function regionBlock(name, list) {
+  const wrap = document.createElement('span');
+  wrap.className = 'code-region';
+  const tag = document.createElement('span');
+  tag.className = 'code-region-tag';
+  tag.textContent = name;
+  wrap.appendChild(tag);
+  if (!list || !list.length) {
+    const none = document.createElement('span');
+    none.className = 'code-meta code-dead';
+    none.textContent = '未查到';
+    wrap.appendChild(none);
+  } else {
+    list.forEach((c) => wrap.appendChild(codeChip(c)));
+  }
+  return wrap;
+}
 
 function mountCodeRows() {
   document.querySelectorAll('[data-card-event]').forEach((card) => {
@@ -6522,24 +6563,22 @@ function mountCodeRows() {
     lab.textContent = '🎟 ' + d.label;
     row.appendChild(lab);
 
-    const list = (d.codes && d.codes.length) ? d.codes : (d.extra || []);
-    if (list.length) {
-      list.forEach((code) => {
-        const b = document.createElement('span');
-        b.className = 'code-item';
-        b.textContent = code;
-        b.title = '点击复制';
-        b.addEventListener('click', () => {
-          if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
-          b.classList.add('is-copied');
-          setTimeout(() => b.classList.remove('is-copied'), 900);
-        });
-        row.appendChild(b);
-      });
-      if (d.extra && d.codes.length) {
+    const hasAny = (d.cn && d.cn.length) || (d.gl && d.gl.length);
+    if (hasAny) {
+      if (d.sameNote) {
+        const n = document.createElement('span');
+        n.className = 'code-meta';
+        n.textContent = d.sameNote;
+        row.appendChild(n);
+        (d.gl || d.cn).forEach((c) => row.appendChild(codeChip(c)));
+      } else {
+        row.appendChild(regionBlock('国服', d.cn));
+        if (d.gl && d.gl.length) row.appendChild(regionBlock('国际服', d.gl));
+      }
+      if (d.extra && d.extra.length) {
         const more = document.createElement('span');
         more.className = 'code-meta';
-        more.textContent = '常驻活动码：' + d.extra.join(' / ');
+        more.textContent = (d.extraNote || '常驻活动码') + '：' + d.extra.join(' / ');
         row.appendChild(more);
       }
       if (d.until) {
@@ -6550,10 +6589,10 @@ function mountCodeRows() {
       }
     }
     if (d.next) {
-      const n = document.createElement('span');
-      n.className = 'code-next';
-      n.textContent = d.next;
-      row.appendChild(n);
+      const n2 = document.createElement('span');
+      n2.className = 'code-next';
+      n2.textContent = d.next;
+      row.appendChild(n2);
     }
     planner.insertBefore(row, planner.firstChild);
   });
